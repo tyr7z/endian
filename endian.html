@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Swap Endianness</title>
+        <style>
+            body {
+                font-family: system-ui;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                background-color: rgb(34, 38, 42);
+                color: white;
+                margin: 0;
+            }
+
+            h1 {
+                margin-bottom: 8px;
+            }
+
+            h3 {
+                margin-top: 0;
+                opacity: 0.5;
+            }
+
+            textarea {
+                width: 520px;
+                margin: 24px;
+                background: none;
+                color: white;
+                border: 1px solid #555;
+                padding: 8px;
+                resize: none;
+            }
+
+            #output {
+                height: 32px;
+                display: flex;
+                flex-direction: column;
+                cursor: pointer;
+            }
+
+            #output:not(:empty)::before {
+                font-size: 12px;
+                opacity: 0.7;
+                content: "Click to copy to clipboard";
+            }
+
+            #output[notify]::after {
+                margin-top: 8px;
+                font-size: 12px;
+                color: red;
+                content: "Copied to clipboard";
+                text-align: right;
+                width: 100%;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Swap Endianness</h1>
+        <h3>Convert from little endian to big endian and vice versa.</h3>
+        <textarea
+            id="input"
+            autofocus
+            spellcheck="false"
+            placeholder="Enter a hex string"
+        ></textarea>
+        <div id="output"></div>
+
+        <script>
+            const inputEl = document.getElementById("input");
+            const outputEl = document.getElementById("output");
+
+            function swapEndianness(hexString) {
+                // Remove 0x, spaces, and make lowercase
+                let cleaned = hexString
+                    .trim()
+                    .toLowerCase()
+                    .replace(/0x/g, "")
+                    .replace(/\s+/g, "");
+
+                // Pad with leading zero if length is odd
+                if (cleaned.length % 2 !== 0) {
+                    cleaned = "0" + cleaned;
+                }
+
+                // Split into bytes, reverse, and join
+                return cleaned.match(/../g).reverse().join("");
+            }
+
+            inputEl.addEventListener("input", () => {
+                outputEl.textContent = swapEndianness(inputEl.value);
+            });
+
+            outputEl.addEventListener("click", () => {
+                if (!outputEl.textContent) return;
+
+                navigator.clipboard.writeText(outputEl.textContent);
+                outputEl.setAttribute("notify", "1");
+
+                setTimeout(() => {
+                    outputEl.removeAttribute("notify");
+                }, 3000);
+            });
+        </script>
+    </body>
+</html>
